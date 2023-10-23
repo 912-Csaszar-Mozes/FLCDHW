@@ -4,7 +4,7 @@
 import random
 
 
-class Hashtable:
+class HashTable:
     def __init__(self, m=2 ** 8, c=0.618033988):
         self.c = c
         self.m = m
