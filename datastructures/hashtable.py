@@ -13,6 +13,11 @@ class HashTable:
     def hash_function(self, key):
         if isinstance(key, int):
             return int(self.m * ((key * self.c) % 1))
+        elif isinstance(key, str):
+            nr = 0
+            for i in range(len(key)):
+                nr += (ord(key[i]) % 100) ** i
+            return self.hash_function(nr)
         return None
 
     def add(self, key, value):
