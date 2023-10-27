@@ -10,3 +10,6 @@ class SymbolTable:
 
     def search(self, key):
         return self.hashtable.search(key)
+
+    def search_by_value(self, value):
+        return self.hashtable.search_by_value(value)

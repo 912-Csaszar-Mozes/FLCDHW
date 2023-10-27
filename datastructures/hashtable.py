@@ -9,6 +9,7 @@ class HashTable:
         self.c = c
         self.m = m
         self.table = [[] for _ in range(self.m)]
+        self.reverse_table = [[] for _ in range(self.m)]
 
     def hash_function(self, key):
         if isinstance(key, int):
@@ -22,9 +23,16 @@ class HashTable:
 
     def add(self, key, value):
         self.table[self.hash_function(key)].append((key, value))
+        self.reverse_table[self.hash_function(value)].append((value, key))
 
     def search(self, key):
         for entry in self.table[self.hash_function(key)]:
             if entry[0] == key:
+                return entry[1]
+        return None
+
+    def search_by_value(self, value):
+        for entry in self.reverse_table[self.hash_function(value)]:
+            if entry[0] == value:
                 return entry[1]
         return None
