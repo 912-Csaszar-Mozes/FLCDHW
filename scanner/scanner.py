@@ -6,8 +6,10 @@ from datastructures.hashtable import HashTable
 
 class Scanner:
     removable_separators = [" ", "\n", "\t"]
-    non_removable_separators = ["=", "<", "+", "*", "[", "]", ";", "~", "(", ")"]
-    separators = removable_separators + non_removable_separators
+    non_removable_separators = ["=", "+", "*", "[", "]", ";", "(", ")"]
+    # starter separators and what they can continue with
+    starter_separators = {"<": "=", ">": "=", ":": ":", "!": "!", "&": "&&", "|": "||", "?": "!", "@": "!", "~": "!"}
+    separators = removable_separators + non_removable_separators + list(starter_separators.keys())
 
     def __init__(self, file_name, token_in_name):
         self.__tokens = self.__create_token_in(token_in_name)
@@ -18,8 +20,13 @@ class Scanner:
 
     def get_next_word(self, i, line):
         start_i = i
-        while i < len(line) and line[i] not in Scanner.separators:
+        if line[i] in list(Scanner.starter_separators.keys()):
+            if i + 1 < len(line) and line[i + 1] in Scanner.starter_separators[line[i]]:
+                i += 1
             i += 1
+        else:
+            while i < len(line) and line[i] not in Scanner.separators:
+                i += 1
         i += (start_i == i)
         while i < len(line) and line[i] in Scanner.removable_separators:
             i += 1
