@@ -38,3 +38,10 @@ class HashTable:
             if entry[0] == value:
                 return entry[1]
         return None
+
+    def save(self):
+        to_ret = "{:^12}|{:^12}\n".format("KEYS", "VALUES")
+        for arr in self.table:
+            for elem in arr:
+                to_ret += "{:^12}|{:^12}\n".format(elem[0], elem[1])
+        return to_ret

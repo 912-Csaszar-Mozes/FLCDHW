@@ -16,3 +16,6 @@ class SymbolTable:
 
     def size(self):
         return self.hashtable.size
+
+    def save(self):
+        return self.hashtable.save()

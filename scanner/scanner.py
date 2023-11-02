@@ -5,19 +5,23 @@ from datastructures.hashtable import HashTable
 
 
 class Scanner:
-    separators = [" ", "\n", "\t", "=", "<", "+", "*", "[", "]"]
+    removable_separators = [" ", "\n", "\t"]
+    non_removable_separators = ["=", "<", "+", "*", "[", "]", ";", "~", "(", ")"]
+    separators = removable_separators + non_removable_separators
 
     def __init__(self, file_name, token_in_name):
         self.__tokens = self.__create_token_in(token_in_name)
         self.file_name = file_name
         self.st = SymbolTable()
-        self.pif = HashTable()
+        self.pif = []
         self.constructed = False
 
     def get_next_word(self, i, line):
+        start_i = i
         while i < len(line) and line[i] not in Scanner.separators:
             i += 1
-        while i < len(line) and line[i] in [" ", "\n", "\t"]:
+        i += (start_i == i)
+        while i < len(line) and line[i] in Scanner.removable_separators:
             i += 1
         return i
 
@@ -29,41 +33,55 @@ class Scanner:
             else:
                 return "no-str"
         # Is numeric constant
-        # check that first digit is non-zero
+        # special case of the word being 0
+        if word == "0":
+            return "int"
+        # take potential sign into account
         first_ind = 0
         if word[0] == "+" or word[0] == "-":
             first_ind = 1
-        if word == "0":
-            return "int"
+
+        # if the word only has a sign, return no-int message
         if len(word) <= first_ind:
             return "no-int"
-        if "123456789".find(word[first_ind]):
+
+        # check that first digit is non-zero
+        if "123456789".find(word[first_ind]) != -1:
+            # check that the subsequent digits are digits and not characters
             for i in range(first_ind + 1, len(word)):
-                if not "1234567890".find(word[i]):
+                if not "1234567890".find(word[i]) != -1:
                     return "no-int"
             else:
                 return "int"
         return "no-const"
 
     def parse_is_constant_response(self, word, resp):
-        if resp.find("no"):
-            if resp.find("str"):
+        if resp.find("no") != -1:
+            if resp.find("str") != -1:
                 return "`{}` is not a valid string constant".format(word)
-            elif resp.find("int"):
+            elif resp.find("int") != -1:
                 return "`{}` is not a valid integer constant".format(word)
             else:
-                return "`{}` is doesn't follow any constant rules".format(word)
+                return "`{}` doesn't follow any constant rules".format(word)
         return False
 
     def is_identifier(self, word):
         if word[0] in string.ascii_letters or word[0] == "_":
             chars = string.ascii_letters + string.digits + "_"
+            # check for word to only use allowed characters
             for i in range(1, len(word)):
                 if word[i] not in chars:
                     return False
             else:
                 return True
         return False
+
+    def remove_separators(self, word):
+        while len(word) > 0 and word[0] in Scanner.removable_separators:
+            word = word[1:]
+        while len(word) > 0 and word[-1] in Scanner.removable_separators:
+            word = word[:-1]
+        return word
 
     def construct_st_pif(self):
         with open(self.file_name, "r") as f:
@@ -74,40 +92,38 @@ class Scanner:
                 curr_char = 0
                 while curr_char < len(line):
                     next_char = self.get_next_word(curr_char, line)
-                    if next_char == curr_char:
-                        next_char += 1
-                    word = line[curr_char:next_char].strip()
-                    print("Current word <" + word + ">, curr_char=" + str(curr_char) + ", next_char=" + str(
-                        next_char) + ", length=" + str(len(line)))
+                    word = self.remove_separators(line[curr_char:next_char])
+                    # print("Current word <" + word + ">, curr_char=" + str(curr_char) + ", next_char=" + str(
+                    #     next_char) + ", length=" + str(len(line)))
                     if word != "":
                         categorized = False
                         error = ""
                         token_nr = self.__tokens.search(word)
-                        if token_nr:
+                        if token_nr is not None:
                             categorized = True
-                            self.pif.add(token_nr, -1)
+                            self.pif.append((token_nr, -1))
                         resp = self.parse_is_constant_response(word, self.is_constant(word))
                         # if you could find a valid constant, insert (-1, ST_KEY) into PIF
-                        if not resp:
+                        if not resp and not categorized:
                             categorized = True
 
                             key = self.st.search_by_value(word)
-                            if not key:
+                            if key is None:
                                 key = self.st.size()
                                 self.st.add(key, word)
-                            self.pif.add(-1, key)
+                            self.pif.append((-1, key))
                         # else write it in error
-                        elif error == "":
+                        elif error == "" and not categorized:
                             error = resp
 
-                        if self.is_identifier(word):
+                        if self.is_identifier(word) and not categorized:
                             categorized = True
 
                             key = self.st.search_by_value(word)
-                            if not key:
+                            if key is None:
                                 key = self.st.size()
                                 self.st.add(key, word)
-                            self.pif.add(-2, key)
+                            self.pif.append((-2, key))
                         elif error == "":
                             error = "could not categorize word `{}`".format(word)
 
@@ -125,7 +141,14 @@ class Scanner:
 
     def save(self, name):
         if self.constructed:
-            pass
+            with open("scan_out/PIF_" + name + ".txt", "w") as f:
+                f.write("{:^12}|{:^12}\n".format("KEYS", "VALUES"))
+                for entry in self.pif:
+                    f.write("{:^12}|{:^12}\n".format(entry[0], entry[1]))
+
+            with open("scan_out/ST_" + name + ".out", "w") as f:
+                for line in self.st.save():
+                    f.write(line)
         else:
             raise Exception("ERROR: PIF and ST not constructed yet; nothing to save")
 
