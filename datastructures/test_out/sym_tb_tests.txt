@@ -1,0 +1,10 @@
+Test number 1 returned with result: 
+	 No errors found after inserting, searching and reverse-searching 1000 elements.
+Test number 2 returned with result: 
+	 No errors found after inserting, searching and reverse-searching 1000 elements.
+Test number 3 returned with result: 
+	 No errors found after inserting, searching and reverse-searching 1000 elements.
+Test number 4 returned with result: 
+	 No errors found after inserting, searching and reverse-searching 1000 elements.
+Test number 5 returned with result: 
+	 No errors found after inserting, searching and reverse-searching 1000 elements.

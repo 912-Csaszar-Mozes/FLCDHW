@@ -10,6 +10,7 @@ class HashTable:
         self.m = m
         self.table = [[] for _ in range(self.m)]
         self.reverse_table = [[] for _ in range(self.m)]
+        self.size = 0
 
     def hash_function(self, key):
         if isinstance(key, int):
@@ -22,6 +23,7 @@ class HashTable:
         return None
 
     def add(self, key, value):
+        self.size += 1
         self.table[self.hash_function(key)].append((key, value))
         self.reverse_table[self.hash_function(value)].append((value, key))
 

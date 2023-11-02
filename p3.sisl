@@ -1,0 +1,13 @@
+int[100] sieve
+sieve[0] = 0
+sieve[1] = 0
+
+~ int i = 2; i < 100; i = i + 1 ~
+	sieve[i] = 1
+~!
+
+~ int i = 2; i < 100; i = i + 1 ~
+	~ int j = i * 2; j < 100; j = j + i ~
+		sieve[j] = 0
+	~!
+~!
