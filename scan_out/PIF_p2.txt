@@ -1,3 +1,6 @@
+Where the keys are -1, a constant is present
+-2 at the keys represents an identifier
+if the value is -1, it means we have a token and there is no ST entry for this element
     KEYS    |   VALUES   
      18     |     -1     
      27     |     -1     

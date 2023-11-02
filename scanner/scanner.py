@@ -159,11 +159,15 @@ class Scanner:
     def save(self, name):
         if self.constructed:
             with open("scan_out/PIF_" + name + ".txt", "w") as f:
+                f.write("Where the keys are -1, a constant is present\n")
+                f.write("-2 at the keys represents an identifier\n")
+                f.write("if the value is -1, it means we have a token and there is no ST entry for this element\n")
                 f.write("{:^12}|{:^12}\n".format("KEYS", "VALUES"))
                 for entry in self.pif:
                     f.write("{:^12}|{:^12}\n".format(entry[0], entry[1]))
 
             with open("scan_out/ST_" + name + ".out", "w") as f:
+
                 for line in self.st.save():
                     f.write(line)
         else:
