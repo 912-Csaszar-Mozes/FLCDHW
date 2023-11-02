@@ -1,36 +1,30 @@
-int len#int num#
-	int num_len = 0
-	@num > 0@
-		num_len = num_len + 1
-		num = num / 10
-	@!
-	<< num_len
-#!
-int palyndrome#int num#
-	int num_len = len(num)
-	int first = 10 ** num_len
-	int is_palyndrome = 1
-
-	@ num_len > 0 @
-		? (num / first) % 10 != num % 10 ?
-			is_palyndrome = 0
-			!!
-		?!
-		first = first / 10
-		num = num / 10
-		num_len = num_len - 2
-	@!
-	<< is_palyndrome
-#!
 int num = 12321
-int num2 = 1234323
-?is_palyndrome(num) == 1?
-	print("The number " + num " is a palindrome.")
+int num_len = 0
+@num > 0@
+    num_len = num_len + 1
+    num = num / 10
+@!
+
+int first = 1
+int num_len_copy = num_len
+@ num_len_copy > 0 @
+    first = first * 10
+@!
+
+int is_palyndrome = 1
+
+@ num_len > 0 @
+    ? (num / first) % 10 != num % 10 ?
+        is_palyndrome = 0
+        !!
+    ?!
+    first = first / 10
+    num = num / 10
+    num_len = num_len - 2
+@!
+
+?is_palyndrome == 1?
+	print("The number " + num + " is a palindrome.")
 ::
-	print("The number " + num " is not a palindrome.")
-?!
-?is_palyndrome(num2) == 1?
-	print("The number " + num2 " is a palindrome.")
-::
-	print("The number " + num2 " is not a palindrome.")
+	print("The number " + num + " is not a palindrome.")
 ?!
