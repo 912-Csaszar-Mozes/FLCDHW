@@ -1,0 +1,2 @@
+int 8esel = 0
+$ int wrong_type = "Something strange here"

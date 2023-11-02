@@ -9,17 +9,39 @@ class HashTable:
         self.c = c
         self.m = m
         self.table = [[] for _ in range(self.m)]
+        self.reverse_table = [[] for _ in range(self.m)]
+        self.size = 0
 
     def hash_function(self, key):
         if isinstance(key, int):
             return int(self.m * ((key * self.c) % 1))
+        elif isinstance(key, str):
+            nr = 0
+            for i in range(len(key)):
+                nr += (ord(key[i]) % 100) ** i
+            return self.hash_function(nr)
         return None
 
     def add(self, key, value):
+        self.size += 1
         self.table[self.hash_function(key)].append((key, value))
+        self.reverse_table[self.hash_function(value)].append((value, key))
 
     def search(self, key):
         for entry in self.table[self.hash_function(key)]:
             if entry[0] == key:
                 return entry[1]
         return None
+
+    def search_by_value(self, value):
+        for entry in self.reverse_table[self.hash_function(value)]:
+            if entry[0] == value:
+                return entry[1]
+        return None
+
+    def save(self):
+        to_ret = "{:^12}|{:^12}\n".format("KEYS", "VALUES")
+        for arr in self.table:
+            for elem in arr:
+                to_ret += "{:^12}|{:^12}\n".format(elem[0], elem[1])
+        return to_ret

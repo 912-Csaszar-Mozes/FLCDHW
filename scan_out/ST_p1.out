@@ -1,0 +1,14 @@
+    KEYS    |   VALUES   
+     0      |    num     
+     5      |     10     
+     10     |"The number "
+     2      |  num_len   
+     7      |num_len_copy
+     12     |" is not a palindrome."
+     4      |     1      
+     9      |     2      
+     1      |   12321    
+     6      |   first    
+     11     |" is a palindrome."
+     3      |     0      
+     8      |is_palyndrome
