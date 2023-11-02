@@ -18,6 +18,7 @@ class Scanner:
         self.st = SymbolTable()
         self.pif = []
         self.constructed = False
+        self.construct_st_pif()
 
     def get_next_word(self, i, line):
         start_i = i
