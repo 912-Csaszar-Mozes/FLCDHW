@@ -1,3 +1,9 @@
+class Transition:
+    def __init__(self, symbols, end):
+        self.symbols = symbols
+        self.end = end
+
+
 class FA:
     def __init__(self, file_name):
         self.file_loaded = False
@@ -6,10 +12,38 @@ class FA:
     def check_sequence(self, sequence):
         # 0 means found, 1 means forward, -1 means backwards
         state = 1
-        options = [self.init_state]
-        stack = []
-        while len(options) > 0:
-            pass
+        stack = [[self.init_state, 0]]
+        match_ind = 0
+        # while there are more options to explore, go for it
+        while len(stack) > 0:
+            state, option = stack[-1]
+            # print("Current state {:^5} with option {:^5}".format(state, option))
+            # if you can go forward
+            if option < len(self.transitions.get(state, [])):
+                # if the next element of the sequence can be obtained by a transition
+                if sequence[match_ind] in self.transitions[state][option].symbols:
+                    # add new option to the stack
+                    stack.append([self.transitions[state][option].end, 0])
+                    match_ind += 1
+                    # check if the sequence is fully matched
+                    if match_ind == len(sequence):
+                        # if we are at a final state, return True
+                        if stack[-1][0] in self.final_states:
+                            return True
+                        # else backtrack
+                        else:
+                            stack[-1][1] += 1
+                            match_ind -= 1
+                # if not found the correct option
+                else:
+                    stack[-1][1] += 1
+            # if you need to go back because of lack of options
+            else:
+                stack.pop()
+                match_ind -= 1
+                # if the stack is not empty, move the step before one transition try forward
+                if len(stack) > 0:
+                    stack[-1][1] += 1
         return False
 
     def format_states(self):
@@ -23,9 +57,9 @@ class FA:
         return ", ".join(map(lambda x: "((" + x + "))", self.final_states))
 
     def format_transitions(self):
-        return "\n".join(map(lambda state: "\n".
-                             join(map(lambda tran: "(" + state + ") ---" + tran[0] + "--> (" + tran[1] + ")",
-                                      self.transitions[state])), self.transitions))
+        return "\n".join(map(lambda state: "\n".join(
+            map(lambda tran: "(" + state + ") ---" + tran.symbols + "--> (" + tran.end + ")",
+                self.transitions[state])), self.transitions))
 
     def __load_file(self, file_name):
         self.file_loaded = False
@@ -38,7 +72,7 @@ class FA:
             for transition in f.readline().strip().split("/;/"):
                 start, possibilities, end = transition.split("/,/")
                 if self.transitions.get(start, None) is not None:
-                    self.transitions[start].append((possibilities, end))
+                    self.transitions[start].append(Transition(possibilities, end))
                 else:
-                    self.transitions[start] = [(possibilities, end)]
+                    self.transitions[start] = [Transition(possibilities, end)]
         self.file_loaded = True

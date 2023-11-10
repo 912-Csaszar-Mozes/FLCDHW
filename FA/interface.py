@@ -9,17 +9,13 @@ class FAInterface:
         return ("Options: " + "\n\t1) Read FA from file"
                 + (("\n\t2) Display initial state"
                     + "\n\t3) Display final state(s)" + "\n\t4) Display set of states" + "\n\t5) Display alphabet"
-                    + "\n\t6) Display transitions") if readFA else "")
+                    + "\n\t6) Display transitions" + "\n\t7) Try to match a word") if readFA else "")
                 + "\n\th) Hide help" + "\n\tx) Exit\n") if show_help else ""
 
     @staticmethod
     def main():
-        readFA = None
-        command = input("Options: " +
-                        "\n\t1) Read FA from file" +
-                        "\n\th) Hide help" +
-                        "\n\tx) Exit" +
-                        "\n>>? ").strip()
+        readFA = FA("FA/example.in")
+        command = input(FAInterface.get_help(True, True) + ">>? ").strip()
         show_help = True
 
         while command != "x":
@@ -41,13 +37,19 @@ class FAInterface:
                 print(readFA.format_alphabet())
             elif command == "6":
                 print(readFA.format_transitions())
+            elif command == "7":
+                sequence = input("Please provide a sequence: ")
+                if readFA.check_sequence(sequence):
+                    print("Sequence `" + sequence + "` is matched by the FA!")
+                else:
+                    print("Sequence `" + sequence + "` is NOT matched by the FA!")
             elif command == "h":
                 print("Help hidden")
                 show_help = False
             else:
                 print("Wrong command; please try something else")
             command = input(FAInterface.get_help(readFA is not None, show_help) + ">>? ")
-        print("Exited process...")
+        print("Interface exited...")
 
 
 FAInterface.main()
