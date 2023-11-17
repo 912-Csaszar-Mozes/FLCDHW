@@ -1,0 +1,20 @@
+GitHub link: https://github.com/912-Csaszar-Mozes/FLCDHW
+
+The program works by reading the FA input file and creating an FA class. This will be check if a word is a part of the language by traversing the graph in a depth-first search manner. If the sequence was matched and the current node is final, we return True, else the program tries every path. This process is guaranteed to end.
+
+The ingerface can be run by running the FA/interface.py file. Any file inside the FA folder can be read as input.
+
+Format in EBNF:
+letter := "a" | "b" | ... | "z" | "A" | ... | "Z"
+digit := "0" | "1" | ... | "9"
+symbol := "(" | ")" | "!" | "+" | "-"
+lds = letter | digit | symbol
+
+file := starting_state "\n" final_states "\n" states "\n" alphabet "\n" transitions
+state := letter | state letter
+starting_state := state
+final_states := state | final_states /,/ state
+states := state | states /,/ state
+alphabet := lds | alphabet lds
+transitions := transition | transitions /;/ transition
+transition: state /,/ alphabet /,/ state
