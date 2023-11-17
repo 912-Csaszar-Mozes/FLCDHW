@@ -2,6 +2,7 @@ import string
 
 from datastructures.symboltable import SymbolTable
 from datastructures.hashtable import HashTable
+from FA.FA import FA
 
 
 class Scanner:
@@ -11,6 +12,10 @@ class Scanner:
     starter_separators = {"<": "=", ">": "=", "=": "=", ":": ":", "!": "!=", "&": "&", "|": "|", "?": "!", "@": "!",
                           "~": "!"}
     separators = removable_separators + non_removable_separators + list(starter_separators.keys())
+
+    string_matcher = FA("FA/string_const.in")
+    int_matcher = FA("FA/int_const.in")
+    identifier_matcher = FA("FA/identifier.in")
 
     def __init__(self, file_name, token_in_name):
         self.__tokens = self.__create_token_in(token_in_name)
@@ -44,33 +49,10 @@ class Scanner:
 
     def is_constant(self, word):
         # Is string constant
-        if word[0] == "\"" and word[-1] == "\"":
-            if word.count("\"") == 2:
-                return "str"
-            else:
-                return "no-str"
+        if word[0] == "\"":
+            return "str" if Scanner.string_matcher.check_sequence(word) else "no-str"
         # Is numeric constant
-        # special case of the word being 0
-        if word == "0":
-            return "int"
-        # take potential sign into account
-        first_ind = 0
-        if word[0] == "+" or word[0] == "-":
-            first_ind = 1
-
-        # if the word only has a sign, return no-int message
-        if len(word) <= first_ind:
-            return "no-int"
-
-        # check that first digit is non-zero
-        if "123456789".find(word[first_ind]) != -1:
-            # check that the subsequent digits are digits and not characters
-            for i in range(first_ind + 1, len(word)):
-                if not "1234567890".find(word[i]) != -1:
-                    return "no-int"
-            else:
-                return "int"
-        return "no-const"
+        return "int" if Scanner.int_matcher.check_sequence(word) else "no-str"
 
     def parse_is_constant_response(self, word, resp):
         if resp.find("no") != -1:
@@ -83,15 +65,7 @@ class Scanner:
         return False
 
     def is_identifier(self, word):
-        if word[0] in string.ascii_letters or word[0] == "_":
-            chars = string.ascii_letters + string.digits + "_"
-            # check for word to only use allowed characters
-            for i in range(1, len(word)):
-                if word[i] not in chars:
-                    return False
-            else:
-                return True
-        return False
+        return Scanner.identifier_matcher.check_sequence(word)
 
     def remove_separators(self, word):
         while len(word) > 0 and word[0] in Scanner.removable_separators:

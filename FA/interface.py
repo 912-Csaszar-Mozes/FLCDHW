@@ -14,7 +14,7 @@ class FAInterface:
 
     @staticmethod
     def main():
-        readFA = FA("FA/example.in")
+        readFA = FA("FA/string_const.in")
         command = input(FAInterface.get_help(True, True) + ">>? ").strip()
         show_help = True
 

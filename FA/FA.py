@@ -10,12 +10,15 @@ class FA:
         self.__load_file(file_name)
 
     def check_sequence(self, sequence):
-        # 0 means found, 1 means forward, -1 means backwards
-        state = 1
+        if len(sequence) == 0:
+            return self.init_state in self.final_states
         stack = [[self.init_state, 0]]
         match_ind = 0
         # while there are more options to explore, go for it
         while len(stack) > 0:
+            # check if terminal is in alphabet
+            if sequence[match_ind] not in self.alphabet:
+                return False
             state, option = stack[-1]
             # print("Current state {:^5} with option {:^5}".format(state, option))
             # if you can go forward
